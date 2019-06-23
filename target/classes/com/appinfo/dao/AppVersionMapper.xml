@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.appinfo.dao.AppVersionMapper">
+    <resultMap id="appversionResult" type="AppVersion" autoMapping="true">
+        <result property="softwareName" column="b.softwareName"/>
+        <result property="versionNo" column="a.versionNo"/>
+        <result property="versionSize" column="a.versionSize"/>
+        <result property="publishStatus" column="a.publishStatus" />
+        <result property="downloadLink" column="a.downloadLink"/>
+        <result property="apkFileName" column="a.apkFileName"/>
+        <result property="modifyDate" column="b.modifyDate"/>
+    </resultMap>
+    <select id="QueryAppversionByappId" parameterType="AppVersion" resultMap="appversionResult">
+SELECT b.softwareName ,a.versionNo,a.versionSize,a.publishStatus,a.downloadLink,a.apkFileName,a.modifyDate
+FROM  app_version a, app_info  b WHERE a.appId = b.id AND a.appId = #{appId}</select>
+    <resultMap id="applatestversionResult" type="AppVersion" autoMapping="true">
+        <result property="id" column="a.id"/>
+        <result property="softwareName" column="b.softwareName"/>
+        <result property="versionNo" column="a.versionNo"/>
+        <result property="versionSize" column="a.versionSize"/>
+        <result property="publishStatus" column="a.publishStatus" />
+        <result property="versionInfo" column="a.versionInfo" />
+        <result property="appInfo" column="b.appInfo" />
+        <result property="downloadLink" column="a.downloadLink"/>
+        <result property="apkFileName" column="a.apkFileName"/>
+        <result property="modifyDate" column="b.modifyDate"/>
+    </resultMap>
+    <select id="QueryLatestAppversionByappId" parameterType="AppVersion" resultMap="applatestversionResult">
+SELECT  a.id, b.softwareName ,a.versionNo,a.versionSize,a.publishStatus,a.versionInfo,b.appInfo,a.downloadLink,a.apkFileName,a.modifyDate
+ FROM  app_version a, app_info  b WHERE a.appId = b.id AND a.appId = #{id} ORDER BY id DESC LIMIT 1
+</select>
+    <select id="findVersionStatus" parameterType="int" resultType="String">
+         SELECT valueName FROM data_dictionary
+        <where>
+            <if test="id != null">
+                valueId = #{id}
+            </if>
+            <if test="id != null">
+                AND typeName = "发布状态"
+            </if>
+        </where>
+    </select>
+    <insert id="versionAdd" parameterType="Appversion">
+        INSERT INTO app_version(appID,versionNo,versionSize,versionInfo,publishStatus,apkLocPath,creationDate) VALUE (#{appId},#{versionNo},#{versionSize},#{versionInfo},#{publishStatus},#{apkLocPath},NOW())
+
+    </insert>
+    <update id="versionUpdate" parameterType="Appversion">
+        UPDATE app_version SET versionSize= #{versionSize}, versionInfo= #{versionInfo} WHERE id= #{id}
+    </update>
+    <delete id="appveriosnDelete" parameterType="int">
+         delete from app_version where appId = #{appId}
+    </delete>
+</mapper>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.appinfo.dao.CategoryMapper">
+    <select id="findLevel1" resultType="appCategory">
+        SELECT id,categoryName,parentId FROM app_category WHERE parentId IS NULL
+    </select>
+    <select id="findLevel2" resultType="appCategory">
+        select id,categoryName,parentId from app_category where parentId=#{level1}
+    </select>
+    <select id="findLevel3" resultType="appCategory">
+        select id,categoryName,parentId from app_category where parentId=#{level2}
+    </select>
+    <select id="findLevelByid" resultType="appCategory">
+        select id,categoryName from app_category where id=#{id}
+    </select>
+
+</mapper>

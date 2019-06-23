@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.appinfo.dao.BackendAppInfoMapper">
+
+    <select id="login" resultMap="dev_user" parameterType="devUser">
+        select * from dev_user where  devCode=#{devCode} and devPassword=#{devPassword}
+    </select>
+
+    <resultMap id="dev_user" type="devuser">
+        <id column="id" property="id"/>
+        <result column="devCode" property="devCode"/>
+        <result column="devName" property="devName"/>
+        <result column="devEmail" property="devEmail"/>
+        <result column="devInfo" property="devInfo"/>
+        <result column="createdBy" property="createdBy"/>
+        <result column="modifyBy" property="modifyBy"/>
+        <result column="creationDate" property="creationDate"/>
+        <result column="modifyDate" property="modifyDate"/>
+
+
+    </resultMap>
+
+    <select id="backendLogin" resultMap="backend_user" parameterType="backendUser">
+       select b.*,d.valueName userTypeName from backend_user b LEFT JOIN data_dictionary d ON b.userType=d.valueId And d.typeCode="USER_TYPE" where  userCode=#{userCode} and userPassword=#{userPassword}
+    </select>
+
+    <resultMap id="backend_user" type="backendUser">
+        <id column="id" property="id"/>
+        <result column="userCode" property="userCode"/>
+        <result column="userName" property="userName"/>
+        <result column="userPassword" property="userPassword"/>
+        <result column="userType" property="userType"/>
+        <result column="createdBy" property="createdBy"/>
+        <result column="modifyBy" property="modifyBy"/>
+        <result column="userTypeName" property="userTypeName"/>
+        <result column="creationDate" property="creationDate"/>
+        <result column="modifyDate" property="modifyDate"/>
+
+    </resultMap>
+
+    <select id="getAppList" resultMap="app_info" parameterType="backendAppInfo">
+        SELECT  i.id,i.softwareName,i.apkname,i.softwareSize,i.downloads,i.flatformId,i.categoryLevel1,i.categoryLevel2,i.categoryLevel3,i.status,i.versionId,i.supportROM,i.interfaceLanguage,i.appInfo,i.logoPicPath,d.valueName flatformName,c1.categoryName categoryLevel1Name,c2.categoryName categoryLevel2Name,c3.categoryName categoryLevel3Name,da.valueName statusName,v.versionNo versionNo,v.versionSize versionSize,v.versionInfo versionInfo,v.downloadLink downloadLink,v.apkFileName apkFileName
+        FROM app_info i
+        LEFT JOIN data_dictionary d ON  i.flatformId=d.valueId AND d.typeCode="APP_FLATFORM"
+        LEFT JOIN app_category c1 ON i.categoryLevel1=c1.id
+        LEFT JOIN app_category c2 ON i.categoryLevel2=c2.id
+        LEFT JOIN app_category c3 ON i.categoryLevel3=c3.id
+        LEFT JOIN data_dictionary da ON i.status=da.valueId AND da.typeCode="APP_STATUS"
+        LEFT JOIN app_version v ON i.versionId=v.id
+        WHERE 1=1 and i.status=1
+
+
+            <if test="softwareName!=null and  softwareName!=''">
+                and i.SoftwareName like concat('%',#{softwareName},'%')
+            </if>
+            <if test="flatformId != null and flatformId!= ''">
+                and i.FlatformId =#{flatformId}
+            </if>
+            <if test="categoryLevel1 != null and categoryLevel1!=''">
+                and i.CategoryLevel1 =#{categoryLevel1}
+            </if>
+            <if test="categoryLevel2 != null and categoryLevel2!=''">
+                and i.CategoryLevel2 =#{categoryLevel2}
+            </if>
+            <if test="categoryLevel3 != null and categoryLevel3!=''">
+                and i.CategoryLevel3 =#{categoryLevel3}
+            </if>
+
+        <if test="startRow!=null and pageSize!=null">
+            limit #{startRow},#{pageSize}
+        </if>
+    </select>
+    <resultMap id="app_info" type="backendAppInfo">
+        <id column="id" property="id"/>
+        <result column="softwareName" property="softwareName"/>
+        <result column="APKName" property="APKName"/>
+        <result column="softwareSize" property="softwareSize"/>
+        <result column="flatformId" property="flatformId"/>
+        <result column="flatformName" property="flatformName"/>
+        <result column="categoryLevel1" property="categoryLevel1"/>
+        <result column="categoryLevel2" property="categoryLevel2"/>
+        <result column="categoryLevel3" property="categoryLevel3"/>
+        <result column="categoryLevel1Name" property="categoryLevel1Name"/>
+        <result column="categoryLevel2Name" property="categoryLevel2Name"/>
+        <result column="categoryLevel3Name" property="categoryLevel3Name"/>
+        <result column="status" property="status"/>
+        <result column="statusName" property="statusName"/>
+        <result column="downloads" property="downloads"/>
+        <result column="versionId" property="versionId"/>
+        <result column="versionNo" property="versionNo"/>
+        <result column="supportRom" property="supportRom"/>
+        <result column="interfaceLanguage" property="interfaceLanguage"/>
+        <result column="appInfo" property="appInfo1"/>
+        <result column="logoPicPath" property="logoPicPath"/>
+        <result column="versionSize" property="versionSize"/>
+        <result column="versionInfo" property="versionInfo"/>
+        <result column="downloadLink" property="downloadLink"/>
+        <result column="apkFileName" property="apkFileName"/>
+    </resultMap>
+
+    <select id="getAppCount" resultType="Integer"  parameterType="Integer">
+        SELECT COUNT(1) FROM app_info i where 1=1 and  i.status=1
+
+
+            <if test="softwareName!=null and  softwareName!=''">
+                and i.SoftwareName like concat('%',#{softwareName},'%')
+            </if>
+            <if test="flatformId != null and flatformId!= ''">
+                and i.FlatformId =#{flatformId}
+            </if>
+            <if test="categoryLevel1 != null and categoryLevel1!='' ">
+                and i.CategoryLevel1 =#{categoryLevel1}
+            </if>
+            <if test="categoryLevel2 != null and categoryLevel2!=''">
+                and i.CategoryLevel2 =#{categoryLevel2}
+            </if>
+            <if test="categoryLevel3 != null and categoryLevel3!=''">
+                and i.CategoryLevel3 =#{categoryLevel3}
+            </if>
+
+
+    </select>
+
+    <select id="getAppById" resultMap="app_info" parameterType="backendAppInfo">
+        SELECT  i.id,i.softwareName,i.apkname,i.softwareSize,i.downloads,i.flatformId,i.categoryLevel1,i.categoryLevel2,i.categoryLevel3,i.status,i.versionId,i.supportROM,i.interfaceLanguage,i.appInfo,i.logoPicPath,d.valueName flatformName,c1.categoryName categoryLevel1Name,c2.categoryName categoryLevel2Name,c3.categoryName categoryLevel3Name,da.valueName statusName,v.versionNo versionNo,v.versionSize versionSize,v.versionInfo versionInfo,v.downloadLink downloadLink,v.apkFileName apkFileName
+                FROM app_info i
+                LEFT JOIN data_dictionary d ON  i.flatformId=d.valueId AND d.typeCode="APP_FLATFORM"
+                LEFT JOIN app_category c1 ON i.categoryLevel1=c1.id
+                LEFT JOIN app_category c2 ON i.categoryLevel2=c2.id
+                LEFT JOIN app_category c3 ON i.categoryLevel3=c3.id
+                LEFT JOIN data_dictionary da ON i.status=da.valueId AND da.typeCode="APP_STATUS"
+                LEFT JOIN app_version v ON i.versionId=v.id
+                WHERE i.id=#{id}
+    </select>
+
+    <update id="updataAppInfo"  parameterType="Integer">
+
+         UPDATE app_info a SET a.status=#{status} WHERE a.id=#{id}
+    </update>
+
+    <select id="findL1list" resultMap="app_List1" parameterType="backendAppInfo">
+        SELECT DISTINCT i.categoryLevel1,c1.categoryName categoryLevel1Name
+                              FROM app_info i
+                              LEFT JOIN data_dictionary d ON  i.flatformId=d.valueId AND d.typeCode="APP_FLATFORM"
+                             LEFT JOIN app_category c1 ON i.categoryLevel1=c1.id
+                                LEFT JOIN app_category c2 ON i.categoryLevel2=c2.id
+                                LEFT JOIN app_category c3 ON i.categoryLevel3=c3.id
+                                LEFT JOIN data_dictionary da ON i.status=da.valueId AND da.typeCode="APP_STATUS"
+                                LEFT JOIN app_version v ON i.versionId=v.id
+                                WHERE 1=1
+    </select>
+    <select id="findL2list" resultMap="app_List2" parameterType="backendAppInfo">
+        SELECT DISTINCT i.categoryLevel2,c2.categoryName categoryLevel2Name
+                              FROM app_info i
+                              LEFT JOIN data_dictionary d ON  i.flatformId=d.valueId AND d.typeCode="APP_FLATFORM"
+                             LEFT JOIN app_category c1 ON i.categoryLevel1=c1.id
+                                LEFT JOIN app_category c2 ON i.categoryLevel2=c2.id
+                                LEFT JOIN app_category c3 ON i.categoryLevel3=c3.id
+                                LEFT JOIN data_dictionary da ON i.status=da.valueId AND da.typeCode="APP_STATUS"
+                                LEFT JOIN app_version v ON i.versionId=v.id
+                                WHERE 1=1
+    </select>
+    <select id="findL3list" resultMap="app_List3" parameterType="backendAppInfo">
+        SELECT DISTINCT i.categoryLevel3,c3.categoryName categoryLevel3Name
+                              FROM app_info i
+                              LEFT JOIN data_dictionary d ON  i.flatformId=d.valueId AND d.typeCode="APP_FLATFORM"
+                             LEFT JOIN app_category c1 ON i.categoryLevel1=c1.id
+                                LEFT JOIN app_category c2 ON i.categoryLevel2=c2.id
+                                LEFT JOIN app_category c3 ON i.categoryLevel3=c3.id
+                                LEFT JOIN data_dictionary da ON i.status=da.valueId AND da.typeCode="APP_STATUS"
+                                LEFT JOIN app_version v ON i.versionId=v.id
+                                WHERE 1=1
+    </select>
+    <resultMap id="app_List1" type="backendAppInfo">
+        <result column="categoryLevel1" property="categoryLevel1"/>
+        <result column="categoryLevel1Name" property="categoryLevel1Name"/>
+    </resultMap>
+    <resultMap id="app_List2" type="backendAppInfo">
+        <result column="categoryLevel2" property="categoryLevel2"/>
+        <result column="categoryLevel2Name" property="categoryLevel2Name"/>
+    </resultMap>
+    <resultMap id="app_List3" type="backendAppInfo">
+        <result column="categoryLevel3" property="categoryLevel3"/>
+        <result column="categoryLevel3Name" property="categoryLevel3Name"/>
+    </resultMap>
+
+    <select id="findflatformList" resultMap="app_flat" parameterType="backendAppInfo">
+        SELECT DISTINCT i.flatformId,d.valueName flatformName
+                                FROM app_info i
+                                LEFT JOIN data_dictionary d ON  i.flatformId=d.valueId AND d.typeCode="APP_FLATFORM"
+                                LEFT JOIN app_category c1 ON i.categoryLevel1=c1.id
+                                LEFT JOIN app_category c2 ON i.categoryLevel2=c2.id
+                                LEFT JOIN app_category c3 ON i.categoryLevel3=c3.id
+                                LEFT JOIN data_dictionary da ON i.status=da.valueId AND da.typeCode="APP_STATUS"
+                                LEFT JOIN app_version v ON i.versionId=v.id
+                                WHERE 1=1
+    </select>
+
+    <resultMap id="app_flat" type="backendAppInfo">
+        <id column="flatformId" property="flatformId"/>
+        <result column="flatformName" property="flatformName"/>
+    </resultMap>
+
+</mapper>
